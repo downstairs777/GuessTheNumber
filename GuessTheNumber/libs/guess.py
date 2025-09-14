@@ -1,40 +1,42 @@
 import random
-from rich.console import Console
 from rich.prompt import Prompt
 from rich.text import Text
 from libs.game import Game
+from libs.console import Terminal
 
 
 class Guess(Game):
+    terminal: Terminal
     
-    def play(self, console: Console):
+    def __init__(self) -> None:
+        self.terminal = Terminal()
+    
+    def play(self):
         number = random.randint(1, 10)
+        attempts = 0
         
-        console.print(Text.from_markup("Ok, I'm thinking...", style="bright_magenta"))
-        console.print(Text.from_markup(f"I'm thinking of a number between 1 and 10", style="bright_magenta"))
-        console.print(Text.from_markup(f"Try to guess the number", style="bright_magenta"))
-        console.print(Text.from_markup(f"Enter 'exit' to exit the game.", style="grey27"))
+        self.terminal.output(
+            Text.from_markup(
+                f"Ok, I'm thinking of a number between 1 and 10. Try to guess the number!", 
+                style="bright_magenta"
+            )
+        )
         
-        guessed = False
-        
+        guessed = False        
         while not guessed:
+            if attempts > 0: self.terminal.output(Text.from_markup(f"You have {attempts} attempts left.", style="bright_yellow"))
             input = Prompt.ask(Text.from_markup("Which number am I thinking of?", style="bright_yellow"))
             try:
-                if input == "exit":
-                    console.print(Text.from_markup("Bye!", style="bright_green"))
-                    exit(0)
+                if input == "exit": self.terminal.exit()
                 elif int(input) == number:
-                    console.print(Text.from_markup("You guessed the number!", style="bright_green"))
+                    self.terminal.output(Text.from_markup("You guessed the number!", style="bright_green"))
                     guessed = True
                 elif int(input) < number:
-                    console.print(Text.from_markup("Too low!", style="bright_magenta"))
-                elif int(input) > number:
-                    console.print(Text.from_markup("Too high!", style="bright_magenta"))
+                    self.terminal.output(Text.from_markup(f"The number {input} is too low!", style="bright_magenta"))
+                    attempts += 1
                 else:
-                    console.print(Text.from_markup("Wrong number!", style="bright_red"))
+                    self.terminal.output(Text.from_markup(f"The number {input} is too high!", style="bright_magenta"))
+                    attempts += 1
             except ValueError:
-                console.print(Text.from_markup("Invalid number. Please try again.", style="bright_red"))
+                self.terminal.temporal(Text.from_markup("Invalid number. Please try again.", style="bright_red"))
                 continue
-        
-        
-        
