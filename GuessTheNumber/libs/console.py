@@ -20,6 +20,9 @@ class Terminal:
             self._console = Console()
             self._initialized = True
             
+    def delete_last_element(self) -> None:
+        self._stdout.pop()
+            
     def output(self, text: str | Text) -> None:
         self._stdout.append(text)
         group = Group(*self._stdout)
@@ -31,7 +34,17 @@ class Terminal:
         exit(0)
         
     def temporal(self, text: str | Text) -> None:
+        self.output(text)
+        self._stdout.pop()
+        
+    def clue(self, text: str | Text) -> None:
+        self._stdout.pop(3)
+        self._stdout.insert(3, text)
         group = Group(*self._stdout)
         self._console.clear()
         self._console.print(Panel(group))
-        self._console.print(text)
+        
+    def counter(self, counter: int) -> None:
+        message = Text.from_markup(f"You have {counter} attempts left.", style="bright_yellow")
+        self.output(message)
+        self._stdout.pop()

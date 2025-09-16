@@ -24,19 +24,22 @@ class Guess(Game):
         
         guessed = False        
         while not guessed:
-            if attempts > 0: self.terminal.output(Text.from_markup(f"You have {attempts} attempts left.", style="bright_yellow"))
             input = Prompt.ask(Text.from_markup("Which number am I thinking of?", style="bright_yellow"))
             try:
                 if input == "exit": self.terminal.exit()
                 elif int(input) == number:
+                    self.terminal.delete_last_element()
                     self.terminal.output(Text.from_markup("You guessed the number!", style="bright_green"))
+                    if attempts > 0: self.terminal.output(Text.from_markup(f"You completed the game in {attempts} attempts.", style="bright_yellow"))
                     guessed = True
                 elif int(input) < number:
-                    self.terminal.output(Text.from_markup(f"The number {input} is too low!", style="bright_magenta"))
+                    self.terminal.clue(Text.from_markup(f"The number {input} is too low!", style="bright_magenta"))
                     attempts += 1
+                    self.terminal.counter(attempts)
                 else:
-                    self.terminal.output(Text.from_markup(f"The number {input} is too high!", style="bright_magenta"))
+                    self.terminal.clue(Text.from_markup(f"The number {input} is too high!", style="bright_magenta"))
                     attempts += 1
+                    self.terminal.counter(attempts)
             except ValueError:
-                self.terminal.temporal(Text.from_markup("Invalid number. Please try again.", style="bright_red"))
+                self.terminal.output(Text.from_markup("Invalid number. Please try again.", style="bright_red"))
                 continue

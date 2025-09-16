@@ -7,6 +7,10 @@ from libs.console import Terminal
 from InquirerPy import inquirer
 
 
+# OPTIONS = ["I guess", "I'm thinking", "exit"]
+OPTIONS = ["I guess", "exit"]
+
+
 class Menu:
     _stdout: List[Text | str] = []
     terminal: Terminal
@@ -18,7 +22,7 @@ class Menu:
         while True:
             mode = inquirer.select( # type: ignore
                 "Select your mode of play",
-                choices=["I guess", "I'm thinking", "exit"],
+                choices=OPTIONS,
             ).execute()
             if mode == "exit": self.terminal.exit()
             elif mode.lower() == "i guess": return Guess()
